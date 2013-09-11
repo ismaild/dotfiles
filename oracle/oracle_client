@@ -1,0 +1,5 @@
+export ORACLE_BASE=/usr/local/oracle_client_11_2
+export ORACLE_HOME=$ORACLE_BASE
+export PATH=$ORACLE_HOME/bin:$PATH
+export DYLD_LIBRARY_PATH=$ORACLE_HOME/lib
+export TNS_ADMIN=$ORACLE_BASE/admin/network
