@@ -36,6 +36,7 @@ excludesfile = /Users/ismail/.gitignore
   rank = shortlog -sn --no-merges
   # add without whitespace
   addnw = !sh -c 'git diff -w --no-color "$@" | git apply --cached' -
+  hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
 
 [credential]
 helper = osxkeychain
