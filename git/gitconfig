@@ -1,6 +1,6 @@
 [user]
 	name = Ismail Dhorat
-	email = ismail@zyelabs.net
+	email = ismail@codiez.co.za
 [color]
   ui = auto
 [color "branch"]
@@ -20,7 +20,7 @@
   whitespace = red reverse
 [core]
   whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
-excludesfile = /Users/ismail/.gitignore
+  excludesfile = /Users/ismail/.gitignore
 [alias]
   st = status
   stu = status -uno
