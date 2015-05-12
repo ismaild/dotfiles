@@ -34,6 +34,7 @@
   hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
   ri = rebase --interactive
   ad = commit --amend
+  aa = add .
 
 [credential]
 helper = osxkeychain
