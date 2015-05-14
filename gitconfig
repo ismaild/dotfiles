@@ -1,6 +1,6 @@
 [user]
-	name = Ismail Dhorat
-	email = ismail@codiez.co.za
+  name = Ismail Dhorat
+  email = ismail@codiez.co.za
 [color]
   ui = auto
 [color "branch"]
@@ -37,5 +37,7 @@
   aa = add .
 
 [credential]
-helper = osxkeychain
+  helper = osxkeychain
 
+[push]
+  default = simple
