@@ -81,4 +81,5 @@ source $ZSH/oh-my-zsh.sh
 source /usr/local/share/zsh/site-functions/_aws
 export PATH="$HOME/.rbenv/bin:$PATH"
 source ~/.prv_env
+source ~/.oracle_client
 eval "$(rbenv init - --no-rehash)"
