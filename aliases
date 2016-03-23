@@ -1,0 +1,6 @@
+# "s ." will open the current directory in Sublime
+alias s="ssh"
+alias g='git'
+alias sb='subl' 
+alias pgup="postgres -D /usr/local/var/postgres"
+alias dcup="docker-compose up"

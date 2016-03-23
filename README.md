@@ -1,12 +1,14 @@
 dotfiles
 --------
 
-My dot files, a work in progess
+* zsh theme agnoster
+* VI, iTerm & Sublime all have a similar colour scheme. Solarized (Dark)
+* Brewfile 
+* Etc
+
 
 Linux Setup
 ---
-
-
 
 # install ZSH
 sudo apt-get install zsh
@@ -24,6 +26,7 @@ ln -s ~/dotfiles/git/git-completion.bash .git-completion.bash
 ln -s ~/dotfiles/zshrc .zshrc
 ln -s ~/dotfiles/gitconfig .gitconfig
 ln -s ~/dotfiles/gitignore .gitignore
+ln -s ~/dotfiles/aliases  .aliases
 
 
 
