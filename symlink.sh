@@ -9,7 +9,7 @@
 dir=~/dotfiles                    # dotfiles directory
 olddir=~/dotfiles_old             # old dotfiles backup directory
 # list of files/folders to symlink in homedir
-files="aliases bash_profile git-completion.bash oracle_client vimrc vim zshrc"
+files="aliases bash_profile git-completion.bash gitconfig oracle_client vimrc vim zshrc"
 themes=""
 
 ##########
