@@ -11,22 +11,18 @@ Linux Setup
 ---
 
 # install ZSH
-sudo apt-get install zsh
+
+`sudo apt-get install zsh`
 
 # change shell
-chsh -s /usr/bin/zsh
+
 
 # install oh my
-sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+run: `sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"`
 
-git clone https://github.com/ismaild/dotfiles
-ln -s ~/dotfiles/vim .vim
-ln -s ~/dotfiles/vimrc .vimrc -f
-ln -s ~/dotfiles/git/git-completion.bash .git-completion.bash
-ln -s ~/dotfiles/zshrc .zshrc
-ln -s ~/dotfiles/gitconfig .gitconfig
-ln -s ~/dotfiles/gitignore .gitignore
-ln -s ~/dotfiles/aliases  .aliases
+run: `git clone https://github.com/ismaild/dotfiles`
+
+run: `./symlink.sh`
 
 
 
