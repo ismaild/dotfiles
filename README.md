@@ -25,5 +25,8 @@ run: `git clone https://github.com/ismaild/dotfiles`
 run: `./symlink.sh`
 
 
+# Notes for Improvements
+
+* Install Powerline fonts fron github instead of homebrew
 
 
