@@ -1,5 +1,7 @@
 alias s="ssh"
 alias g='git'
+alias python='python3'
+alias pip='pip3'
 
 # mac specific aliases
 if [[ $platform == 'Darwin' ]]; then

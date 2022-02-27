@@ -8,7 +8,8 @@ ZSH_THEME="agnoster"
 plugins=(git rbenv zsh-autosuggestions zsh-syntax-highlighting)
 
 # User configuration
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin":$PATH
+export PATH="/Users/ismail/Library/Python/3.8/bin":$PATH
 
 source $ZSH/oh-my-zsh.sh
 
@@ -26,3 +27,5 @@ fi
 
 source ~/.oracle_client
 source ~/.aliases
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
