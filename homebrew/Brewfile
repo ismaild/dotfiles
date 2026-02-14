@@ -1,33 +1,22 @@
-tap 'homebrew/binary'
-tap 'homebrew/bundle'
-tap 'homebrew/science'
-brew 'autoconf'
-brew 'awscli'
-brew 'xz'
-brew 'pkg-config'
-brew 'libpng'
-brew 'freetype'
-brew 'fontconfig'
-brew 'pixman'
-brew 'gettext'
-brew 'libffi'
-brew 'glib'
-brew 'cairo'
-brew 'openssl'
-brew 'unixodbc'
-brew 'jpeg'
-brew 'libtiff'
-brew 'wxmac'
-brew 'gmp'
-brew 'mpfr'
-brew 'libmpc'
-brew 'isl'
-brew 'gcc'
-brew 'readline'
-brew 'libyaml'
-brew 'ruby'
-brew 'heroku-toolbelt'
-brew 'pcre'
-brew 'rbenv'
-brew 'ruby-build'
-brew 'ssh-copy-id'
+# Core
+brew "git"
+brew "zsh"
+brew "vim"
+
+# Ruby / Rails
+brew "rbenv"
+brew "ruby-build"
+brew "postgresql"
+brew "redis"
+brew "node"
+brew "yarn"
+
+# Python
+brew "pyenv"
+
+# Languages
+brew "ruby"
+
+
+tap "homebrew/cask-fonts"
+cask "font-source-code-pro-for-powerline"

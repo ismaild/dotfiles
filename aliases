@@ -1,8 +1,10 @@
+platform=$(uname)
 alias s="ssh"
 alias g='git'
 alias python='python3'
 alias pip='pip3'
-
+alias be="bundle exec"
+alias migrate="rails db:migrate"
 # mac specific aliases
 if [[ $platform == 'Darwin' ]]; then
   alias sb='subl'
