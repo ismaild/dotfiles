@@ -17,6 +17,10 @@ brew "pyenv"
 # Languages
 brew "ruby"
 
+# Docker
+brew colima
+brew docker
+brew docker-compose
 
 tap "homebrew/cask-fonts"
 cask "font-source-code-pro-for-powerline"
