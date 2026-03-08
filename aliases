@@ -1,13 +1,37 @@
 platform=$(uname)
+
+# Basic Shortcuts
 alias s="ssh"
 alias g='git'
 alias python='python3'
 alias pip='pip3'
 alias be="bundle exec"
 alias migrate="rails db:migrate"
-# mac specific aliases
+
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# Standard Operations
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+
+# Colored Output & List Formatting
 if [[ $platform == 'Darwin' ]]; then
+  alias ls='ls -G'
   alias sb='subl'
   alias pgup="postgres -D /usr/local/var/postgres"
   alias dcup="docker-compose up"
+else
+  alias ls='ls --color=auto'
 fi
+
+alias ll='ls -lh'
+alias la='ls -A'
+alias l='ls -CF'
+
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'

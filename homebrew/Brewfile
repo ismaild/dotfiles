@@ -6,7 +6,7 @@ brew "vim"
 # Ruby / Rails
 brew "rbenv"
 brew "ruby-build"
-brew "postgresql"
+brew "postgresql@17"
 brew "redis"
 brew "node"
 brew "yarn"
@@ -17,10 +17,15 @@ brew "pyenv"
 # Languages
 brew "ruby"
 
-# Docker
-brew colima
-brew docker
-brew docker-compose
+# Containers !
+brew "colima"
+brew "docker"
+brew "docker-compose"
 
-tap "homebrew/cask-fonts"
+# Can i has some AI?
+brew "llama.cpp"
+brew "ollama"
+brew "gemini-cli"
+
+# Fonts
 cask "font-source-code-pro-for-powerline"

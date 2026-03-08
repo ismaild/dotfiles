@@ -1,117 +1,196 @@
 #!/bin/bash
+
 ############################
-# .make.sh
-# This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
+# symlink.sh
+# This script creates symlinks from the home directory to any desired dotfiles in this repository.
 ############################
 
-########## Variables
+set -e
 
-dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"                    # dotfiles directory
-olddir=~/dotfiles_old_$(date +%Y%m%d_%H%M%S)             # old dotfiles backup directory
-# list of files/folders to symlink in homedir
-files="aliases bash_profile git-completion.bash gitconfig oracle_client vimrc vim zshrc"
-themes="solarized-powerline.zsh-theme"
+# Colors for output
+NC='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
 
-##########
+log_info()    { printf "${BLUE}[INFO]${NC}  %s\n" "$1"; }
+log_success() { printf "${GREEN}[OK]${NC}    %s\n" "$1"; }
+log_warn()    { printf "${YELLOW}[WARN]${NC}  %s\n" "$1"; }
+log_error()   { printf "${RED}[ERROR]${NC} %s\n" "$1"; }
 
-# create dotfiles_old in homedir
-echo -n "Creating $olddir for backup of any existing dotfiles in ~ ..."
-mkdir -p $olddir
-echo "done"
+dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+olddir=~/dotfiles_old_$(date +%Y%m%d_%H%M%S)
+backup_created=false
+dry_run=false
 
-# change to the dotfiles directory
-echo -n "Changing to the $dir directory ..."
-cd $dir
-echo "done"
-
-# Check for Homebrew and install if not present
-if ! command -v brew &> /dev/null; then
-    echo "Homebrew not found. Installing..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Check for dry-run flag
+if [[ "$1" == "--dry-run" || "$1" == "-d" ]]; then
+    dry_run=true
+    log_info "DRY RUN ENABLED - No changes will be made."
 fi
 
-# Install Homebrew packages
-if [ -f "$dir/homebrew/Brewfile" ]; then
-    echo "Installing Homebrew packages..."
-    brew bundle --file="$dir/homebrew/Brewfile"
-fi
+# Files/folders in the root of the dotfiles repo to EXCLUDE from symlinking
+exclude_list=(".git" ".gitignore" "README.md" "symlink.sh" "homebrew" "ohmyzsh" "pip" "sublime")
 
-# Check for git
-if ! command -v git &> /dev/null; then
-    echo "Error: git is not installed."
-    exit 1
-fi
-
-# Setup git credentials
-if [ ! -f ~/.gitconfig.local ]; then
-    echo "Setting up Git credentials..."
-    read -p "Please enter your Git global user name: " git_user
-    read -p "Please enter your Git global user email: " git_email
-    echo "[user]" > ~/.gitconfig.local
-    echo "  name = $git_user" >> ~/.gitconfig.local
-    echo "  email = $git_email" >> ~/.gitconfig.local
-    echo "Git credentials saved to ~/.gitconfig.local"
-fi
-
-# move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks from the homedir to any files in the ~/dotfiles directory specified in $files
-for file in $files; do
-    if [ -e ~/.$file ]; then
-        echo "Moving existing user dotfile .$file from ~ to $olddir"
-        mv ~/.$file $olddir/
+ensure_backup_dir() {
+    if [ "$dry_run" = true ]; then
+        log_info "[DRY RUN] Would create backup directory: $olddir"
+        return
     fi
-    echo "Creating symlink to $file in home directory."
-    ln -s $dir/$file ~/.$file
-done
-
-install_zsh () {
-# Test to see if zshell is installed:
-if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
-    echo "ZSH installed!"
-    # Clone my oh-my-zsh repository from GitHub only if it isn't already present
-    if [[ ! -d $HOME/.oh-my-zsh ]]; then
-      echo "Installing oh-my-zsh "
-      git clone https://github.com/ohmyzsh/ohmyzsh.git $HOME/.oh-my-zsh
+    if [ "$backup_created" = false ]; then
+        log_info "Creating $olddir for backup of existing dotfiles..."
+        mkdir -p "$olddir"
+        backup_created=true
     fi
-    
-    # Install Zsh Autosuggestions
-    if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
-        echo "Installing zsh-autosuggestions..."
-        git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-    fi
-
-    # Install Zsh Syntax Highlighting
-    if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
-        echo "Installing zsh-syntax-highlighting..."
-        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-    fi
-    # Set the default shell to zsh if it isn't currently set to zsh
-    if [[ ! $(echo $SHELL) == $(which zsh) ]]; then
-        chsh -s $(which zsh)
-    fi
-    # Applied themes
-    for theme in $themes; do
-      if [ -f "$dir/ohmyzsh/$theme" ]; then
-          echo "Installing theme: $theme"
-          rm -f "$HOME/.oh-my-zsh/themes/$theme"
-          ln -s "$dir/ohmyzsh/$theme" "$HOME/.oh-my-zsh/themes/$theme"
-      else
-          echo "Warning: Theme file $dir/ohmyzsh/$theme not found!"
-      fi
-    done
-
-else
-    # If zsh isn't installed, get the platform of the current machine
-    platform=$(uname);
-    # If the platform is Linux, try an apt-get to install zsh and then recurse
-    if [[ $platform == 'Linux' ]]; then
-        sudo apt-get install zsh
-        install_zsh
-    # If the platform is OS X, tell the user to install zsh :)
-    elif [[ $platform == 'Darwin' ]]; then
-        echo "Please install zsh, then re-run this script!"
-        exit
-    fi
-fi
 }
 
-install_zsh
+# 1. Homebrew Setup
+if ! command -v brew &> /dev/null; then
+    if [ "$dry_run" = true ]; then
+        log_info "[DRY RUN] Would install Homebrew."
+    else
+        log_info "Homebrew not found. Installing..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fi
+fi
+
+if [ -f "$dir/homebrew/Brewfile" ]; then
+    if [ "$dry_run" = true ]; then
+        log_info "[DRY RUN] Would sync Homebrew packages from $dir/homebrew/Brewfile."
+    else
+        log_info "Syncing Homebrew packages..."
+        brew bundle --file="$dir/homebrew/Brewfile"
+    fi
+fi
+
+# 2. Git Local Config
+if [ ! -f ~/.gitconfig.local ]; then
+    if [ "$dry_run" = true ]; then
+        log_info "[DRY RUN] Would prompt for Git credentials and create ~/.gitconfig.local."
+    else
+        log_warn "Git credentials not found."
+        read -p "Enter Git user name: " git_user
+        read -p "Enter Git user email: " git_email
+        cat <<EOF > ~/.gitconfig.local
+[user]
+  name = $git_user
+  email = $git_email
+EOF
+        log_success "Git credentials saved to ~/.gitconfig.local"
+    fi
+fi
+
+# 3. Dynamic Symlinking
+log_info "Starting symlink process..."
+cd "$dir"
+
+# Loop through all files/dirs in the root, excluding the list above
+for file in *; do
+    # Skip if in exclude list
+    should_skip=false
+    for exclude in "${exclude_list[@]}"; do
+        if [[ "$file" == "$exclude" ]]; then
+            should_skip=true
+            break
+        fi
+    done
+    [[ "$should_skip" == true ]] && continue
+
+    target="$HOME/.$file"
+    source="$dir/$file"
+
+    if [ -L "$target" ]; then
+        current_link=$(readlink "$target")
+        if [ "$current_link" == "$source" ]; then
+            log_success "Already linked: $file"
+            continue
+        else
+            log_warn "Link mismatch for $file: points to $current_link."
+            if [ "$dry_run" = true ]; then
+                log_info "[DRY RUN] Would move existing link to backup and create new link."
+            else
+                ensure_backup_dir
+                mv "$target" "$olddir/"
+                ln -s "$source" "$target"
+                log_success "Linked: $file -> $target"
+            fi
+        fi
+    elif [ -e "$target" ]; then
+        log_warn "Existing file found for $file."
+        if [ "$dry_run" = true ]; then
+            log_info "[DRY RUN] Would move existing file to backup and create new link."
+        else
+            ensure_backup_dir
+            mv "$target" "$olddir/"
+            ln -s "$source" "$target"
+            log_success "Linked: $file -> $target"
+        fi
+    else
+        if [ "$dry_run" = true ]; then
+            log_info "[DRY RUN] Would create link: $file -> $target"
+        else
+            ln -s "$source" "$target"
+            log_success "Linked: $file -> $target"
+        fi
+    fi
+done
+
+# 4. Zsh & Oh My Zsh Setup
+install_omz_and_plugins() {
+    if [[ ! -d $HOME/.oh-my-zsh ]]; then
+        if [ "$dry_run" = true ]; then
+            log_info "[DRY RUN] Would install oh-my-zsh."
+        else
+            log_info "Installing oh-my-zsh..."
+            git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
+        fi
+    fi
+
+    # Zsh Plugins
+    local plugins_dir="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins"
+    
+    if [ ! -d "$plugins_dir/zsh-autosuggestions" ]; then
+        if [ "$dry_run" = true ]; then
+            log_info "[DRY RUN] Would install zsh-autosuggestions."
+        else
+            mkdir -p "$plugins_dir"
+            log_info "Installing zsh-autosuggestions..."
+            git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions "$plugins_dir/zsh-autosuggestions"
+        fi
+    fi
+
+    if [ ! -d "$plugins_dir/zsh-syntax-highlighting" ]; then
+        if [ "$dry_run" = true ]; then
+            log_info "[DRY RUN] Would install zsh-syntax-highlighting."
+        else
+            mkdir -p "$plugins_dir"
+            log_info "Installing zsh-syntax-highlighting..."
+            git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git "$plugins_dir/zsh-syntax-highlighting"
+        fi
+    fi
+
+    # Custom Theme
+    local theme_file="solarized-powerline.zsh-theme"
+    if [ -f "$dir/ohmyzsh/$theme_file" ]; then
+        if [ "$dry_run" = true ]; then
+            log_info "[DRY RUN] Would install custom theme."
+        else
+            log_info "Installing custom theme..."
+            mkdir -p "$HOME/.oh-my-zsh/themes"
+            ln -sf "$dir/ohmyzsh/$theme_file" "$HOME/.oh-my-zsh/themes/$theme_file"
+        fi
+    fi
+}
+
+if command -v zsh &> /dev/null; then
+    install_omz_and_plugins
+    if [[ "$SHELL" != "$(which zsh)" ]]; then
+        log_info "Changing shell to zsh..."
+        chsh -s "$(which zsh)"
+    fi
+else
+    log_error "Zsh not found. Please install it manually."
+fi
+
+log_success "Dotfiles setup complete!"
