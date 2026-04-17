@@ -27,7 +27,6 @@ brew "docker-compose"
 
 # Can i has some AI?
 brew "llama.cpp"
-brew "ollama"
 brew "gemini-cli"
 
 # Fonts
